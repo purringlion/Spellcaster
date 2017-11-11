@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Spellcaster</string>
+    <string name="activity_main_buttontext_gotodraw">Draw</string>
+    <string name="activity_main_buttontext_gotocollect">Collect Data</string>
 </resources>
