@@ -59,7 +59,15 @@ public class DrawView extends View implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         /* we need acceleration on axes X,Z */
-        spellPath.rLineTo(event.values[0],event.values[2]);
+        float x=event.values[0];
+        float y=event.values[1];
+        float z=event.values[2];
+        if ((Math.abs(x)>1.0f) && (Math.abs(z)>1.0f))
+        {
+            spellPath.rLineTo(x, z);
+            System.out.println("+{" + x + ", " + y + ", " + z + "}");
+//        spellPath.
+        }
 
     }
 
