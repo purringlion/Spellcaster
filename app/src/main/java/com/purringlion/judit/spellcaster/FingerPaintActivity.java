@@ -54,7 +54,7 @@ public class FingerPaintActivity extends AppCompatActivity
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-        mPaint.setColor(0xFFFF0000);
+        mPaint.setColor(0xFFFFFFFF);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -253,9 +253,10 @@ public class FingerPaintActivity extends AppCompatActivity
                                 file.createNewFile();
                             }
                             FileOutputStream ostream = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 10, ostream);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 10, ostream);
                             ostream.close();
                             mv.invalidate();
+                            Toast.makeText(getBaseContext(), "Saved", Toast.LENGTH_SHORT).show();
                         }
                         catch (Exception e)
                         {
