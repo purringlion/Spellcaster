@@ -18,7 +18,7 @@ public class DrawView extends View implements SensorEventListener {
 
     private Paint pen;
     private Cursor cursor;
-    private int xMin=30, xMax, yMin=30,yMax; //scene walls
+    private int xMin = 30, xMax, yMin = 30, yMax; //scene walls
     //private Drawable cursorImg;
     private Path spellPath;
     private int strokeWidth;
@@ -27,17 +27,17 @@ public class DrawView extends View implements SensorEventListener {
     public DrawView(Context context) {
         super(context);
 
-        strokeWidth=6;
+        strokeWidth = 6;
 
         pen = new Paint();
         pen.setColor(Color.GREEN);
         pen.setStrokeWidth(strokeWidth);
         pen.setStyle(Paint.Style.STROKE);
         //cursorImg = context.getResources().getDrawable(R.drawable.metalball);
-        cursor = new Cursor(300.0f,300.0f,300.0f);
+        cursor = new Cursor(300.0f, 300.0f, 300.0f);
         cursor.setRadius(strokeWidth);
         spellPath = new Path();
-        spellPath.moveTo(cursor.getX(),cursor.getZ());
+        spellPath.moveTo(cursor.getX(), cursor.getZ());
 //        spellPath.lineTo(100.0f, 50.0f);
 //        spellPath.lineTo(100.0f,100.0f);
     }
@@ -46,7 +46,7 @@ public class DrawView extends View implements SensorEventListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawPath(spellPath,pen);
+        canvas.drawPath(spellPath, pen);
 
         //canvas.drawCircle(ballX, ballY, ballRadius, pen);
         //cursorImg.setBounds(ballX - ballRadius, ballY - ballRadius, ballX + ballRadius, ballY + ballRadius);
@@ -66,34 +66,33 @@ public class DrawView extends View implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         /* we need acceleration on axes X,Z */
-        float x=event.values[0];
-        float y=event.values[1];
-        float z=event.values[2];
-//        if ((Math.abs(x)>1.0f) && (Math.abs(z)>1.0f))
-//        {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+        if ((Math.abs(x) > 0.20f) && (Math.abs(z) > 0.20f)) {
             boolean withinCanvas = false;
             //collision with walls
-            if ((cursor.getX() + cursor.getRadius() + 2*x) < xMax) {
-                if ((cursor.getY() + cursor.getRadius() + 2*y) < yMax) {
+            float newX = cursor.getX() + cursor.getRadius() + 10 * y;
+            float newY = cursor.getY() + cursor.getRadius() + 10 * z;
+            if ((newX < xMax) && (newX > xMin)) {
+                if ((newY < yMax) && (newY > yMin)) {
                     withinCanvas = true;
-                    spellPath.rLineTo(2*x, 2*z);
+                    spellPath.rLineTo(10 * y, 10 * z);
                     System.out.println("+{" + x + ", " + y + ", " + z + "}");
-                    cursor.moveDelta(2*y, 2*z);
+                    cursor.moveDelta(10 * y, 10 * z);
                 }
 
             }
-//        }
+        }
 
     }
-
-
 
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) { //called when program starts
         super.onSizeChanged(w, h, oldw, oldh);
-        xMax=w-1;
-        yMax=h-1;
+        xMax = w - 1;
+        yMax = h - 1;
     }
 
     @Override
