@@ -47,6 +47,26 @@ public class Cursor {
         this.z = z;
     }
 
+    public void moveDelta(float x, float y, float z)
+    {
+        this.x+=x;
+        this.y+=y;
+        this.z+=z;
+    }
+
+    public void moveDelta(float x, float y)
+    {
+        this.x+=x;
+        this.y+=y;
+    }
+
+//    public float getHorizontalPos()
+//    {
+//        return this.getX();
+//    }
+
+
+
     @Override
     public String toString() {
         return "{" +

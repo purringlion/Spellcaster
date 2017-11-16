@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,19 +21,25 @@ public class DrawView extends View implements SensorEventListener {
     private int xMin=0, xMax, yMin=0,yMax; //scene walls
     //private Drawable cursorImg;
     private Path spellPath;
+    private int strokeWidth;
+
 
     public DrawView(Context context) {
         super(context);
+
+        strokeWidth=6;
+
         pen = new Paint();
         pen.setColor(Color.GREEN);
-        pen.setStrokeWidth(6);
+        pen.setStrokeWidth(strokeWidth);
         pen.setStyle(Paint.Style.STROKE);
         //cursorImg = context.getResources().getDrawable(R.drawable.metalball);
-        cursor = new Cursor(50.0f,50.0f,50.0f);
+        cursor = new Cursor(300.0f,300.0f,300.0f);
+        cursor.setRadius(strokeWidth);
         spellPath = new Path();
         spellPath.moveTo(cursor.getX(),cursor.getZ());
-        spellPath.lineTo(100.0f, 50.0f);
-        spellPath.lineTo(100.0f,100.0f);
+//        spellPath.lineTo(100.0f, 50.0f);
+//        spellPath.lineTo(100.0f,100.0f);
     }
 
     @Override
@@ -64,11 +71,29 @@ public class DrawView extends View implements SensorEventListener {
         float z=event.values[2];
         if ((Math.abs(x)>1.0f) && (Math.abs(z)>1.0f))
         {
-            spellPath.rLineTo(x, z);
-            System.out.println("+{" + x + ", " + y + ", " + z + "}");
-//        spellPath.
+            boolean withinCanvas = false;
+            //collision with walls
+            if ((cursor.getX() + cursor.getRadius() + x) < xMax) {
+                if ((cursor.getX() + cursor.getRadius() + y) < yMax) {
+                    withinCanvas = true;
+                    spellPath.rLineTo(x, z);
+                    System.out.println("+{" + x + ", " + y + ", " + z + "}");
+                    cursor.moveDelta(x, z);
+                }
+
+            }
         }
 
+    }
+
+
+
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) { //called when program starts
+        super.onSizeChanged(w, h, oldw, oldh);
+        xMax=w-1;
+        yMax=h-1;
     }
 
     @Override
