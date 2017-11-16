@@ -18,7 +18,7 @@ public class DrawView extends View implements SensorEventListener {
 
     private Paint pen;
     private Cursor cursor;
-    private int xMin=0, xMax, yMin=0,yMax; //scene walls
+    private int xMin=30, xMax, yMin=30,yMax; //scene walls
     //private Drawable cursorImg;
     private Path spellPath;
     private int strokeWidth;
@@ -69,20 +69,20 @@ public class DrawView extends View implements SensorEventListener {
         float x=event.values[0];
         float y=event.values[1];
         float z=event.values[2];
-        if ((Math.abs(x)>1.0f) && (Math.abs(z)>1.0f))
-        {
+//        if ((Math.abs(x)>1.0f) && (Math.abs(z)>1.0f))
+//        {
             boolean withinCanvas = false;
             //collision with walls
-            if ((cursor.getX() + cursor.getRadius() + x) < xMax) {
-                if ((cursor.getX() + cursor.getRadius() + y) < yMax) {
+            if ((cursor.getX() + cursor.getRadius() + 2*x) < xMax) {
+                if ((cursor.getY() + cursor.getRadius() + 2*y) < yMax) {
                     withinCanvas = true;
-                    spellPath.rLineTo(x, z);
+                    spellPath.rLineTo(2*x, 2*z);
                     System.out.println("+{" + x + ", " + y + ", " + z + "}");
-                    cursor.moveDelta(x, z);
+                    cursor.moveDelta(2*y, 2*z);
                 }
 
             }
-        }
+//        }
 
     }
 

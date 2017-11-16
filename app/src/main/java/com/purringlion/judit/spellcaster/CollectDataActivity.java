@@ -1,6 +1,8 @@
 package com.purringlion.judit.spellcaster;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,7 +13,8 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-public class CollectDataActivity extends AppCompatActivity implements SensorEventListener {
+public class CollectDataActivity extends AppCompatActivity {
+//public class CollectDataActivity extends AppCompatActivity implements SensorEventListener {
     private TextView collectedData;
 
     private DrawView drawView;
@@ -20,49 +23,69 @@ public class CollectDataActivity extends AppCompatActivity implements SensorEven
     private Path spellPath;
     private Cursor cursor;
 
+    DrawingView dv ;
+    public Paint mPaint;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_draw);
 
-//        drawView = new DrawView(this);
-//        setContentView(drawView);
-        collectedData = (TextView) findViewById(R.id.collectData_txt_collectedData);
+        setContentView(dv);
+        mPaint = new Paint();
 
-        cursor = new Cursor(50.0f,50.0f,50.0f);
-        spellPath = new Path();
-        spellPath.moveTo(cursor.getX(),cursor.getZ());
-
-        manager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor=manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mPaint.setAntiAlias(true);
+        mPaint.setDither(true);
+        mPaint.setColor(Color.GREEN);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeWidth(12);
+        dv = new DrawingView(this,mPaint);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        manager.unregisterListener(drawView, sensor);
-    }
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_draw);
+//
+////        drawView = new DrawView(this);
+////        setContentView(drawView);
+//        collectedData = (TextView) findViewById(R.id.collectData_txt_collectedData);
+//
+//        cursor = new Cursor(50.0f,50.0f,50.0f);
+//        spellPath = new Path();
+//        spellPath.moveTo(cursor.getX(),cursor.getZ());
+//
+//        manager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//        sensor=manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        manager.registerListener(drawView, sensor, SensorManager.SENSOR_DELAY_GAME);
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        /* we need acceleration on axes X,Z */
-        spellPath.rLineTo(event.values[0],event.values[2]);
-
-
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        manager.unregisterListener(drawView, sensor);
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        manager.registerListener(drawView, sensor, SensorManager.SENSOR_DELAY_GAME);
+//    }
+//
+//    @Override
+//    public void onSensorChanged(SensorEvent event) {
+//        /* we need acceleration on axes X,Z */
+//        spellPath.rLineTo(event.values[0],event.values[2]);
+//
+//
+//    }
+//
+//    @Override
+//    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+//
+//    }
 
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {

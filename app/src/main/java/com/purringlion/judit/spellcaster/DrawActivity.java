@@ -22,7 +22,8 @@ public class DrawActivity extends AppCompatActivity {
         setContentView(drawView);
 
         manager= (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensor=manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensor=manager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+//        sensor=manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }

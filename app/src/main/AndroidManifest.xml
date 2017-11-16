@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".CollectDataActivity" />
-        <activity android:name=".DrawActivity"></activity>
+        <activity android:name=".DrawActivity" />
+        <activity android:name=".FingerPaintActivity"></activity>
     </application>
 
 </manifest>

@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void gotoCollectData(View view) {
-        Intent intent=new Intent(this,CollectDataActivity.class);
+        Intent intent=new Intent(this,FingerPaintActivity.class);
         startActivity(intent);
     }
 
