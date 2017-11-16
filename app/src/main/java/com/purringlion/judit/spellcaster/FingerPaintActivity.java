@@ -50,6 +50,7 @@ public class FingerPaintActivity extends AppCompatActivity
 
         mv = new MyView(this);
         mv.setDrawingCacheEnabled(true);
+        mv.setBackgroundColor(Color.WHITE);
 //        mv.setBackgroundResource(R.drawable.afor);//set the back ground if you wish to
         setContentView(mv);
         mPaint = new Paint();
@@ -246,7 +247,7 @@ public class FingerPaintActivity extends AppCompatActivity
 
 //                        String path = Environment..getAbsolutePath();
                         String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-                        File file = new File("/sdcard/"+name+".png");
+                        File file = new File("/sdcard/"+name+".jpg");
                         try
                         {
                             if(!file.exists())
