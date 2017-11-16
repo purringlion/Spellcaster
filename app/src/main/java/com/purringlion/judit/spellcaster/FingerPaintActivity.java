@@ -1,6 +1,7 @@
 package com.purringlion.judit.spellcaster;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,6 +37,11 @@ public class FingerPaintActivity extends AppCompatActivity
     MyView mv;
     AlertDialog dialog;
     private static final int REQUEST_WRITE_STORAGE = 112;
+
+    private Activity getThisActivity()
+    {
+        return this;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,7 +235,7 @@ public class FingerPaintActivity extends AppCompatActivity
                         boolean hasPermission = (ContextCompat.checkSelfPermission(getBaseContext(),
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
                         if (!hasPermission) {
-                            ActivityCompat.requestPermissions(getParent(),
+                            ActivityCompat.requestPermissions(getThisActivity(),
                                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     REQUEST_WRITE_STORAGE);
                         }
