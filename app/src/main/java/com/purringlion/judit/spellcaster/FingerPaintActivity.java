@@ -1,8 +1,10 @@
 package com.purringlion.judit.spellcaster;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
@@ -13,6 +15,8 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,12 +35,13 @@ public class FingerPaintActivity extends AppCompatActivity
 
     MyView mv;
     AlertDialog dialog;
+    private static final int REQUEST_WRITE_STORAGE = 112;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mv= new MyView(this);
+        mv = new MyView(this);
         mv.setDrawingCacheEnabled(true);
 //        mv.setBackgroundResource(R.drawable.afor);//set the back ground if you wish to
         setContentView(mv);
@@ -220,10 +226,18 @@ public class FingerPaintActivity extends AppCompatActivity
                 editalert.setView(input);
                 editalert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
+                        boolean hasPermission = (ContextCompat.checkSelfPermission(getBaseContext(),
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+                        if (!hasPermission) {
+                            ActivityCompat.requestPermissions(getParent(),
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    REQUEST_WRITE_STORAGE);
+                        }
 
                         String name= input.getText().toString();
                         Bitmap bitmap = mv.getDrawingCache();
 
+//                        String path = Environment..getAbsolutePath();
                         String path = Environment.getExternalStorageDirectory().getAbsolutePath();
                         File file = new File("/sdcard/"+name+".png");
                         try
@@ -252,5 +266,22 @@ public class FingerPaintActivity extends AppCompatActivity
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_WRITE_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    //reload my activity with permission granted or use the features what required the permission
+                } else
+                {
+                    Toast.makeText(getBaseContext(), "No permission, please grant permission", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
     }
 }

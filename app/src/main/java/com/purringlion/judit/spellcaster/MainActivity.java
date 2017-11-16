@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void gotoDrawActivity(View view) {
-        Intent intent=new Intent(this,DrawActivity.class);
+        Intent intent=new Intent(this,MatrixActivity.class);
         startActivity(intent);
     }
 }
