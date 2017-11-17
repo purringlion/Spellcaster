@@ -17,11 +17,13 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -30,8 +32,21 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class FingerPaintActivity extends AppCompatActivity
         implements ColorPickerDialog.OnColorChangedListener {
@@ -49,6 +64,10 @@ public class FingerPaintActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finger_paint);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         mv = new MyView(this);
         mv.setDrawingCacheEnabled(true);
         mv.setBackgroundColor(Color.WHITE);
@@ -193,6 +212,7 @@ public class FingerPaintActivity extends AppCompatActivity
     private static final int ERASE_MENU_ID = Menu.FIRST + 3;
     private static final int SRCATOP_MENU_ID = Menu.FIRST + 4;
     private static final int Save = Menu.FIRST + 5;
+    private static final int Predict = Menu.FIRST + 6;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -204,6 +224,7 @@ public class FingerPaintActivity extends AppCompatActivity
         menu.add(0, ERASE_MENU_ID, 0, "Erase").setShortcut('5', 'z');
         menu.add(0, SRCATOP_MENU_ID, 0, "SrcATop").setShortcut('5', 'z');
         menu.add(0, Save, 0, "Save").setShortcut('5', 'z');
+        menu.add(0, Predict, 0, "Predict").setShortcut('6', 'z');
 
         return true;
     }
@@ -212,6 +233,62 @@ public class FingerPaintActivity extends AppCompatActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
         return true;
+    }
+
+    private void getPrediction(Bitmap image, MyView mv) throws IOException {
+        // Encode image into byte array
+        boolean hasPermission = (ContextCompat.checkSelfPermission(getBaseContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        if (!hasPermission) {
+            ActivityCompat.requestPermissions(getThisActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE);
+        }
+
+
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+
+        String filePath = "/sdcard/"+ strDate + ".jpg";
+        File file = new File(filePath);
+        try {
+
+            file = new File(filePath);
+            FileOutputStream ostream = new FileOutputStream(file);
+            image.compress(Bitmap.CompressFormat.JPEG, 10, ostream);
+            ostream.close();
+            mv.invalidate();
+            //Toast.makeText(getBaseContext(), "Saved", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+
+            mv.setDrawingCacheEnabled(false);
+
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("image", "current.jpg", RequestBody.create(MediaType.parse("image/png"), new File(filePath)))
+                    .build();
+
+            final OkHttpClient client = new OkHttpClient();
+
+            //Build request
+            Request request = new Request.Builder()
+                    .url("http://192.168.43.137:5000/")
+                    .post(requestBody)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+            String data = response.body().string();
+
+            Toast.makeText(getBaseContext(), data, Toast.LENGTH_LONG).show();
+            file.delete();
+            mv.setDrawingCacheEnabled(true);
+        }
     }
 
     @Override
@@ -247,6 +324,14 @@ public class FingerPaintActivity extends AppCompatActivity
                         PorterDuff.Mode.SRC_ATOP));
                 mPaint.setAlpha(0x80);
                 return true;
+            case Predict:
+                Bitmap bitmap = mv.getDrawingCache();
+                try {
+                    getPrediction(bitmap, mv);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
             case Save:
                 AlertDialog.Builder editalert = new AlertDialog.Builder(FingerPaintActivity.this);
                 editalert.setTitle("Please Enter the name with which you want to Save");
