@@ -21,6 +21,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -47,7 +48,7 @@ public class FingerPaintActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_finger_paint);
         mv = new MyView(this);
         mv.setDrawingCacheEnabled(true);
         mv.setBackgroundColor(Color.WHITE);
@@ -84,12 +85,35 @@ public class FingerPaintActivity extends AppCompatActivity
         private Paint   mBitmapPaint;
         Context context;
 
+
         public MyView(Context c) {
             super(c);
             context=c;
+            init();
+        }
+
+        public MyView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+            this.context=context;
+            init();
+        }
+
+        public MyView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+            this.context=context;
+            init();
+        }
+
+        public MyView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+            this.context=context;
+            init();
+        }
+
+        private void init()
+        {
             mPath = new Path();
             mBitmapPaint = new Paint(Paint.DITHER_FLAG);
-
         }
 
         @Override
